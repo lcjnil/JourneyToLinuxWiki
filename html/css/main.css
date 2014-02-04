@@ -1,0 +1,39 @@
+body {
+	/*text-align: center;*/
+}
+div	{
+	max-width: inherit;
+}
+h1 {
+	text-align: center;
+}
+h4 {	
+	font-style: italic;
+}
+a {
+	color:#4183C4;
+}
+a:hover {
+	color:#4183C4;
+}
+a:active {
+	color:#4183C4;
+}
+a:visited {
+	color:#4183C4;
+}
+.image {
+	text-align: center;
+}
+.container {
+	margin: 0 auto;
+	max-width: 940px;
+}
+blockquote {
+	text-align: center;
+}
+.bg {
+	color: #4e443c;
+	border-radius: 8px;
+	background: rgba(223,221,213,0.33);
+}
