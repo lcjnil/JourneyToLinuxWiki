@@ -37,3 +37,6 @@ blockquote {
 	border-radius: 8px;
 	background: rgba(223,221,213,0.33);
 }
+.justcenter {
+	text-align: center;
+}

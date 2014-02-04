@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+<head>
+    <title>基本配置</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/sunburst.css">
+    <script src="js/prettify.js"></script> 
+    <script src="js/jquery.js"></script>
+</head>
+<body>
+    <div class = "container">
+    
+<h2 id="toc_0.1" class="justcenter">2 基本配置</h2>
+<div class="toc">
+<ul>
+<li><a href="#toc_0.1">2 基本配置</a>
+<ul>
+<li><a href="#toc_0.1.1">2.1 显示</a>
+<ul>
+<li><a href="#toc_0.1.1.1">显卡的配置问题</a>
+<li><a href="#toc_0.1.1.2">分辨率设置问题</a>
+</ul>
+<li><a href="#toc_0.1.2">2.2 桌面环境</a>
+</ul>
+</ul>
+</ul>
+</div>
+<hr />
+<h3 id="toc_0.1.1">2.1 显示</h3>
+
+<h4 id="toc_0.1.1.1">显卡的配置问题</h4>
+<p>
+为什么一开始提到显卡呢?安装显卡驱动难道不好吗?因为笔记本在Linux下,如果不想办法处理掉另外一张独显的话,发热,续航都会出现较大的问题.
+<small>补充</small>评论中提到,能否完全将显卡禁用,当然是可以的,其实这也是最好最简单的方法,只需要在BIOS里面禁用即可.
+关于双显卡在linux下工作的问题,其实我这里说多了估计大家也没什么意思,在这里,我只向大家介绍N卡的双显卡(因为我只有N卡本,而且A卡驱动之中就有直接的设置).具体N卡双显卡的工作原理我不再赘述,大家可以参阅:<a href="http://zh.opensuse.org/SDB:Bumblebee" ">wiki:Bumblebee</a>
+不过Ubuntu在这方面还比较简单,具体下来只需要以下几个命令：
+</p>
+<pre  class="prettyprint">
+$ sudo add-apt-repository ppa:bumblebee/stable
+$ sudo apt-get update
+$ sudo apt-get install bumblebee virtualgl linuxheaders-generic
+</pre>
+<p>
+具体什么是apt-get可以参阅:<a href="http://zh.wikipedia.org/wiki/%E9%AB%98%E7%B4%9A%E5%8C%85%E8%A3%9D%E5%B7%A5%E5%85%B7"">wiki:APT-RPM</a>,如果你是Fedora系的,可以参阅:<a href="http://zh.wikipedia.org/wiki/Yum"">wiki:YUM</a>
+这几步做好之后,我们就成功的安装好了Bumblebee,现在,我们重启一下电脑,然后输入
+</p>
+<pre  class="prettyprint"&gt;>
+$ lspci |grep VGA
+</pre>
+<p>
+返回如下信息,就代表你的双显卡配置成功了(电脑再也不会疯狂发热了
+</p>
+<pre  class="prettyprint">
+00:02.0 VGA compatible controller: Intel Corporation 3rd Gen Core processor Graphics Controller (rev 09)
+01:00.0 VGA compatible controller: NVIDIA Corporation GK107M [GeForce GT 650M] (rev ff)"
+</pre>
+<p>
+注意第二项表示的是独立显卡,如果是ff就是代表关闭,如果是a1就是代表开启,如果想用独显运行程序,只需要输入
+</p>
+<pre  class="prettyprint">
+$ optirun XXX
+</pre>
+
+<h4 id="toc_0.1.1.2">分辨率设置问题</h4>
+<p>
+某些设备,可能处于某些原因,并不能匹配到合适的分辨率,或者像我一样,习惯了双屏输出,可是第二屏并没有合适的分辨率,这个时候,我们需要手动设置以下分辨率,运行如下命令即可
+</p>
+<pre  class="prettyprint">
+$ cvt 1440 9000
+</pre>
+<p>
+会返回如下的信息
+</p>
+<pre  class="prettyprint">
+# 1440x900 59.89 Hz (CVT 1.30MA) hsync: 55.93 kHz; pclk: 106.50 MHz
+Modeline "1440x900_60.00"  106.50  1440 1528 1672 1904  900 903 909 934 -hsync +vsync
+</pre>
+<p>
+记录下来后面每个分辨率具体的数据,然后运行
+</p>
+<pre  class="prettyprint">
+$ xrandr --newmode "1440x900_60.00"  106.50  1440 1528 1672 1904  900 903 909 934 -hsync +vsync
+$ xrandr --addmode VGA1 1440x900_60.00
+$ xrandr --output VGA1 --mode 1440x900_60.00
+</pre>
+<p>
+注意,我这里输入的VGA1是的我第二屏,笔记本应该是LVDS1,具体可以输入xrandr查看.如果运行成功的话,分辨率就会变成你想要的样子,怎么样,比windows下简单多了吧 <small>可能读者并没有遇到win下分辨率异常的情况,但是笔者遇到的时候必须在显卡驱动里面设置才行,非常麻烦</small>
+但是,这个设置只是暂时的,因为一关机设置又会变回原来的样子,稍微复杂一劳永逸的方法是修改xorg.conf,但那种方法有点点麻烦,这里介绍一个shell脚本的方法,什么是shell脚本,请看:<a href="http://www.92csz.com/study/linux/14.htm"">Shell脚本入门</a>
+用一个正常的文本编辑器,输入：
+</p>
+<pre  class="prettyprint">
+#! /bin/bash
+xrandr --newmode "1440x900_60.00"  106.50  1440 1528 1672 1904  900 903 909 934 -hsync +vsync
+xrandr --addmode VGA1 1440x900_60.00
+xrandr --output VGA1 --mode 1440x900_60.00
+</pre>
+<p>
+保存为xxx.sh,然后给他加上可以运行的权限 请参阅: <a href="http://linux.vbird.org/linux_basic/0210filepermission.php"">鸟哥的Linux私房菜:权限</a>
+</p>
+<pre  class="prettyprint">
+$ chmod +x xxx.sh
+</pre>
+<p>
+以后,开机只要定位到这个sh文件的目录,然后运行
+</p>
+<pre  class="prettyprint">
+$ ./xxx.sh
+</pre>
+<p>
+就可以快速的修改分辨率了<small>而且这种方法显得很Geek</small>
+</p>
+
+<h3 id="toc_0.1.2">2.2 桌面环境</h3>
+
+<p>
+为什么要配置桌面环境呢？因为好看的环境会可以促使你放弃Win糟糕的界面.不过GNOME在这里十分方便,大部分时候只需要Click一下就可以了.
+首先,安装Gnome-Tweak,可以更方便的优化
+</p>
+<pre  class="prettyprint">
+$ sudo apt-get install gnome-shell gnome-tweak-tool
+</pre>
+<p>
+然后安装Gnome-shell的插件程序,安装后搜索优化工具就可有打开
+</p>
+<pre  class="prettyprint">
+$ sudo add-apt-repository ppa:satyajit-happy/themes
+$ sudo apt-get update
+$ sudo apt-get install gnome-shell-extensions
+</pre>
+<p>
+这个时候,我们就可以很方便的安装插件啦!只需要登录: <a href="ttps://extensions.gnome.org/"&gt;Gnome-Extensions.html">ttps://extensions.gnome.org/"&gt;Gnome-Extensions</a>
+在此,笔者推荐几个比较赞的插件:
+<a href="ttps://extensions.gnome.org/extension/613/weather/".html">Weather 天气插件</a>
+<a href="ttps://extensions.gnome.org/extension/307/dash-to-dock/".html">Dash to Dock 增加一个很方便的Dock栏</a>
+<a href="ttps://extensions.gnome.org/extension/442/drop-down-terminal/".html">Drop Down Terminal 可以下滑显示的终端，相信这个插件会让你爱上Linux</a>
+其余的,可以自由的安装主题,这一内容,在日后补完<small>因为笔者觉得没多大必要</small>.
+</p>
+
+    </div>
+
+    <script>
+    $(function() {
+  	    window.prettyPrint && prettyPrint();
+    });
+    </script>
+</body>
+</html>
