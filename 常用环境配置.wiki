@@ -1,0 +1,117 @@
+ === 3 常用软件/环境配置 ===
+%toc
+----
+==== 3.1 科学上网 ====
+为什么要科学上网？因为可以和真正的国际接轨 [[http://zh.wikipedia.org/wiki/GFW"|wiki:GFW]],同时,笔者也希望阅读此文档的人可以正确评价GFW,参阅: [[http://www.infzm.com/content/92480"|方滨兴的墙内墙外]]
+科学上网的工具,推荐[[https://code.google.com/p/goagent/"|goagent]],至于教程,官方文档写的十分清楚,这里就不再赘述.
+
+
+==== 3.2 虚拟机 ====
+准备一个win的虚拟机,因为有些时候还是会.离不开Win <small>很大程度上归结与宏福这边访问学校必须要挂VPN,然后这个VPN基于ActiveX</small>,而且还有一些Linux下暂时没有替代的软件 <small>比如说QQ,虽然Linux可以用Google的Hangouts,但应该很少人用吧.</small>
+虚拟机下有2个比较常用,一个是Oracle的免费VirtualBox,另一个是收费的VMware系列,但是在文档这里,我推荐的是:VMware Player.有2个原因,第一个是VMware Player是免费的,而且最新版允许新建虚拟机,第二个是因为VirtuaBox不够好用,很多东西都很恶心.
+[[https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_player/6_0"|VMware Player下载地址]]
+发现下载下来的文件是.bundle,那我们如何安装呢？只需要给其加上可以执行的属性即可.如何加权限?请看上一节提到的文件权限.
+安装过程一路下一步即可,这里不再赘述.
+需要注意的是,虚拟机本身不带有系统,所以需要你自己下载一个系统镜像,这里不附带下载地址.整个虚拟机安装系统不会差太多,但如果你想用你自己备份好的GHO来恢复,需要注意之前要用分区软件重建虚拟磁盘分区表,并且设置为活动(Active),否则是无法引导的.
+安装好系统之后,在虚拟机内部装好VMware Tools,具体在虚拟机的菜单里有Install VMware Tools这一项,完成这一项,虚拟机才可以自适应窗口,并且毫无压力的与主机进行数据交换.为了不影响主机的活动,可以将虚拟机发送到其他的工作区,这样就可以瞬间在Linux和Win之间切换,毫无压力.
+
+==== 3.3 c/c++开发环境设置 ====
+很多的OJ都是在Linux下评测程序的,所以设置一个c/c++开发环境是必要的.而Ubuntu里面默认只有gcc <small>这里的gcc狭义指gcc这个程序,不含g++和其他库,真正意义上的gcc请看:[[http://zh.wikipedia.org/wiki/Gcc"|wiki:GCC]]</small>, 所以首先我们需要下载一些开发工具.
+{{{ class="prettyprint"
+$ sudo apt-get install build-essential
+}}}
+这个时候,我们可以写一个简单的c程序测试一下,这里,我强烈推荐Vim这一款编辑器 <small>如果要深入的学习Linux,以后和Vim打交道的次数很多很多</small>, 学习Vim,请看: [[http://coolshell.cn/articles/5426.html"|简明 Vim 练级攻略]].在Vim里写好一个简单的Hello,world,保存为hello.c
+{{{ class="prettyprint"
+#include<stdio.h>
+int main() {
+	printf("Hello,world!\n");
+	return 0;
+}
+}}}
+还记得编译过程吗？请看如下的命令
+{{{ class="prettyprint"
+$ gcc -E hello.c -o hello.i #预处理
+$ gcc –S hello.i –o hello.s #编译
+$ gcc –c hello.s –o hello.o #汇编
+$ gcc hello.o -o Hello      #连接
+$ ./hello
+  Hello,world!
+}}}
+其实一般情况下不用这么麻烦,只需要:
+{{{ class="prettyprint"
+$ gcc hello.c -o hello
+}}}
+编译器我们已经准备好了,其实到这里一个开发环境已经做好了,但如果想更轻松的完成任务,我们还需要一个(集成开发环境) <small>什么？IDE是什么意思？[[http://tieba.baidu.com/p/1586899608"|编辑器 编译器和集成开发环境]]</small>
+Linux以下一般常用的是Code::Blocks,这样安装即可:
+{{{ class="prettyprint"
+$ sudo apt-get install codeblocks
+}}}
+只要熟悉Win里面CodeBlocks的操作,怎样使用不是难事,不过尴尬的是,其自带的终端不能复制粘贴,我们可以将其替换为普通的Terminal.只要Setting==>Environment...==>General Setting==>Terminal to lanuch console programs, 	用`gnome-terminal -t \$TITLE -x`替换掉`xterm -T $TITLE -e`就搞定了
+
+==== 3.4 Java开发环境设置 ====
+首先在Oracle的[[http://www.oracle.com/technetwork/java/javase/downloads"|官网]]上下载最新的JDK
+首先,解压安装
+{{{ class="prettyprint"
+$ sudo mkdir /usr/lib/jvm
+$ sudo tar zxvf jdk-7u51-linux-x64.tar.gz -C /usr/lib/jvm
+$ cd /usr/lib/jvm/
+$ sudo mv jdk1.7.0_51/ jdk-7-sun
+}}}
+然后修改环境变量
+{{{ class="prettyprint"
+$ vim ~/.bashrc #还记得Vim么?
+#添加
+export JAVA_HOME=/usr/lib/jvm/jdk-7-sun
+export JRE_HOME=${JAVA_HOME}/jre
+export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib
+export PATH=${JAVA_HOME}/bin:$PATH
+#保存,输入以下内容使其生效
+$ source ~/.bashrc
+}}}
+最后,配置默认jdk版本
+{{{ class="prettyprint"
+$ sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk-7-sun/bin/java 300  
+$ sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk-7-sun/bin/javac 300  
+$ sudo update-alternatives --install /usr/bin/jar jar /usr/lib/jvm/jdk-7-sun/bin/jar 300   
+$ sudo update-alternatives --install /usr/bin/javah javah /usr/lib/jvm/jdk-7-sun/bin/javah 300   
+$ sudo update-alternatives --install /usr/bin/javap javap /usr/lib/jvm/jdk-7-sun/bin/javap 300  
+}}}
+测试以下,是否成功
+{{{ class="prettyprint"
+$ java -version
+java version "1.7.0_51"
+Java(TM) SE Runtime Environment (build 1.7.0_51-b13)
+Java HotSpot(TM) 64-Bit Server VM (build 24.51-b03, mixed mode)
+}}}
+至于IDE,Eclipse,还是去[[http://www.eclipse.org/downloads/"|官网]]下载最靠谱吧!解压即可用！
+
+==== 3.5 web开发环境配置 ====
+要开发WEB,我们首先就要配置WEB环境,比较著名的环境就是LAMP,参阅[[http://zh.wikipedia.org/wiki/LAMP"|wiki:LAMP]],而在Linux下安装,十分简单,只需要很少的命令就可以完成所有的事情!在这里可以尽情的鄙视Windows
+{{{ class="prettyprint"
+$ sudo apt-get install tasksel
+$ sudo tasksel install lamp-server
+}}}
+Tasksel是一个很方便的Linux下安装服务器程序的软件,直接安装LAMP组件,则可以自动帮你安装apache,MySQL,PHP,并且可以很方便的解决所有依赖问题,十分方便!
+默认的www目录(就是网页存储的地方啦),在/var/www,但是该目录的所有者不是当前用户,所以我们需要修改其owner,这样才可以十分方便的配置网页. <small>还记得目录权限吗？[[http://linux.vbird.org/linux_basic/0210filepermission.php"|鳥哥的 Linux 私房菜:Linux 的檔案權限與目錄配置]]</small>
+{{{ class="prettyprint"
+$ sudo chown nil /var/www #这里的nil就是当前用户名咯
+}}}
+检验apache是否安装好了,可以访问http://localhost ,出现It works就代表Apache是完美的,接着在/var/www里面添加index.php
+{{{ class="prettyprint"	
+&lt;?php
+	phpinfo();
+?&gt;	
+}}}
+然后访问http://localhost/index.php ,如果出现php的信息,那么php也是正常的!
+不过安装好了LAMP组件之后,对于新手来说,如何配置数据库啊什么的还是一件难事,这里,我推荐安装webmin这个组建,可以很方便的配置,去[[http://www.webmin.com/download.html"|网]]下载,安装即可,之后就可以去https://localhost:10000/ ,输入当前用户名和密码就可以管理啦!	
+至于前端编辑器,笔者推荐的是Sublime Text + Chrome的组合,十分方便!下面的就是Sublime Text的调试攻略,首先就是安装了～
+{{{ class="prettyprint"
+$ sudo apt-get install sublime-text-installer
+}}}
+还是一条命令,十分简单,其实单独的文本编辑器谁都可以,但是ST的厉害在于她的性感以及其强大的插件,在ST里面CTRL+~打开console栏,输入命令,安装插件管理程序Package Control
+{{{ class="prettyprint"
+import urllib.request,os; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ','%20')).read())
+}}}
+之后就可以在Package Control中安装插件,CTRL + P 输入install,就可以搜索安装各种插件了,这里推荐几篇文章,这里不再赘述 [[http://dengo.org/archives/923"|Sublime Text 3 插件]]
+[[index|回到主目录]]
+
