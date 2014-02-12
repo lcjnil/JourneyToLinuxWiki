@@ -15,4 +15,9 @@
     let g:vimwiki_valid_html_tags='b,i,s,u,sub,sup,kbd,br,hr,div,del,code,small,p,pre'
 
 简单的Vimwiki语法这里不再赘述
+因为Vimwiki的语法和Markdown的语法不一样,所以会导致直接在github中访问wiki文件排版格式出错,所以想要浏览,最好在html下访问网页.
 
+未来的安排:
+* 转为Markdown语法,并且用pandoc生成HTML
+* 整体上目录再规划
+* 加入更多细致的内容
